@@ -5,8 +5,11 @@ import {
   LOG_IN_FAILURE,
   LOG_OUT_REQUEST,
   LOG_OUT_SUCCESS,
-  LOG_OUT_FAILURE
-} from '../reducers/user'
+  LOG_OUT_FAILURE,
+  SIGN_UP_REQUEST,
+  SIGN_UP_SUCCESS,
+  SIGN_UP_FAILURE
+} from '../reducers/types'
 import { all, fork, put, delay, takeLatest } from '@redux-saga/core/effects'
 
 // action.data가 data로 들어감 -> go 함수 느낌으로
@@ -34,7 +37,7 @@ function* logIn(action) {
   } catch (error) {
     yield put({
       type: LOG_IN_FAILURE,
-      data: error.response.data
+      error: error.response.data
     })
   }
 }
@@ -43,7 +46,7 @@ function* logIn(action) {
 //   return axios.post('/api/logout', data)
 // }
 
-function* logOut() {
+function* logOut(action) {
   try {
     // const result = yield call(logOutAPI, action.data)
     yield delay(1000)
@@ -53,7 +56,26 @@ function* logOut() {
   } catch (error) {
     yield put({
       type: LOG_OUT_FAILURE,
-      data: error.response.data
+      error: error.response.data
+    })
+  }
+}
+
+// function signUpAPI(data) {
+//   return axios.post('/api/signup', data)
+// }
+
+function* signUp(action) {
+  try {
+    yield delay(1000)
+    yield put({
+      type: SIGN_UP_SUCCESS,
+      data: action.data
+    })
+  } catch (error) {
+    yield put({
+      type: SIGN_UP_FAILURE,
+      error: error.response.data
     })
   }
 }
@@ -80,6 +102,10 @@ function* watchLogOut() {
   yield takeLatest(LOG_OUT_REQUEST, logOut)
 }
 
+function* watchSignUp() {
+  yield takeLatest(SIGN_UP_REQUEST, signUp)
+}
+
 export default function* userSaga() {
-  yield all([fork(watchLogIn), fork(watchLogOut)])
+  yield all([fork(watchLogIn), fork(watchLogOut), fork(watchSignUp)])
 }
