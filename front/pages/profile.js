@@ -4,19 +4,19 @@ import Head from 'next/head'
 import FollowList from '../components/FollowList'
 import FollowerList from '../components/FollowerList'
 import NicknameEditForm from '../components/NicknameEditForm'
+import { useSelector } from 'react-redux'
 
 const Profile = () => {
-  const followerList = [{nickname: 'one'}, {nickname: 'two'}, {nickname: 'three'}]
-  const followingList = [{nickname: 'four'}, {nickname: 'five'}, {nickname: 'six'}]
+  const { me } = useSelector(state => state.user)
   return (
     <>
       <Head>
         <title>내 프로필 | NodeBird</title>
       </Head>
       <AppLayout>
-          <NicknameEditForm />
-          <FollowList header="팔로잉 목록" data={followingList} />
-          <FollowerList header="팔로워 목록" data={followerList} />
+        <NicknameEditForm />
+        <FollowList header="팔로잉" data={me.Followings} />
+        <FollowerList header="팔로워" data={me.Followers} />
       </AppLayout>
     </>
   )
