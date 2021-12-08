@@ -2,6 +2,9 @@ import shortId from 'shortid'
 import produce from 'immer'
 import faker from 'faker'
 import {
+  LOAD_POST_FAILURE,
+  LOAD_POST_REQUEST,
+  LOAD_POST_SUCCESS,
   ADD_POST_FAILURE,
   ADD_POST_REQUEST,
   ADD_POST_SUCCESS,
@@ -15,41 +18,12 @@ import {
 import shortid from 'shortid'
 
 const initialState = {
-  mainPosts: [
-    {
-      id: 1,
-      User: {
-        id: 1,
-        nickname: 'noze'
-      },
-      content: '첫 번째 게시글 #해시태그 #익스프레스',
-      Images: [
-        {
-          id: shortId.generate(),
-          src: 'https://dummyimage.com/300.png/09f/fff'
-        },
-        {
-          id: shortId.generate(),
-          src: 'https://dummyimage.com/300x300/333/fff'
-        },
-        {
-          id: shortId.generate(),
-          src: 'https://dummyimage.com/600x600/999/fff'
-        }
-      ],
-      Comments: [
-        {
-          id: shortId.generate(),
-          User: {
-            id: shortId.generate(),
-            nickname: 'aiki'
-          },
-          content: '너 나 좋아하더라'
-        }
-      ]
-    }
-  ],
+  mainPosts: [],
   imagePaths: [],
+  hasMorePost: true,
+  loadPostLoading: false,
+  loadPostDone: false,
+  loadPostError: null,
   addPostLoading: false,
   addPostDone: false,
   addPostError: null,
@@ -61,14 +35,14 @@ const initialState = {
   removePostError: null
 }
 
-initialState.mainPosts = initialState.mainPosts.concat(
-  Array(20)
+export const generateDummyPost = number =>
+  Array(number)
     .fill()
     .map(() => ({
       id: shortid.generate(),
       Images: [
         {
-          src: faker.image.imageUrl()
+          src: faker.image.image()
         }
       ],
       Comments: [
@@ -86,7 +60,8 @@ initialState.mainPosts = initialState.mainPosts.concat(
       },
       content: faker.lorem.paragraph()
     }))
-)
+
+initialState.mainPosts = initialState.mainPosts.concat(generateDummyPost(10))
 
 export const addPost = data => {
   return {
@@ -133,6 +108,21 @@ const dummyComment = data => ({
 const reducer = (state = initialState, action) => {
   return produce(state, draft => {
     switch (action.type) {
+      case LOAD_POST_REQUEST:
+        draft.loadPostLoading = true
+        draft.loadPostDone = false
+        draft.loadPostError = null
+        break
+      case LOAD_POST_SUCCESS:
+        draft.loadPostLoading = false
+        draft.loadPostDone = true
+        draft.mainPosts = action.data.concat(draft.mainPosts)
+        draft.hasMorePost = draft.mainPosts.length < 50
+        break
+      case LOAD_POST_FAILURE:
+        draft.loadPostLoading = false
+        draft.loadPostError = action.error
+        break
       case ADD_POST_REQUEST:
         draft.addPostLoading = true
         draft.addPostDone = false
