@@ -8,7 +8,13 @@ import {
   LOG_OUT_FAILURE,
   SIGN_UP_REQUEST,
   SIGN_UP_SUCCESS,
-  SIGN_UP_FAILURE
+  SIGN_UP_FAILURE,
+  FOLLOW_SUCCESS,
+  FOLLOW_FAILURE,
+  UNFOLLOW_SUCCESS,
+  UNFOLLOW_FAILURE,
+  UNFOLLOW_REQUEST,
+  FOLLOW_REQUEST
 } from '../reducers/types'
 import { all, fork, put, delay, takeLatest } from '@redux-saga/core/effects'
 
@@ -80,6 +86,44 @@ function* signUp(action) {
   }
 }
 
+// function followAPI(data) {
+//   return axios.post('/api/follow', data)
+// }
+
+function* follow(action) {
+  try {
+    yield delay(1000)
+    yield put({
+      type: FOLLOW_SUCCESS,
+      data: action.data
+    })
+  } catch (error) {
+    yield put({
+      type: FOLLOW_FAILURE,
+      error: error.response.data
+    })
+  }
+}
+
+// function unfollowAPI(data) {
+//   return axios.post('/api/unfollow', data)
+// }
+
+function* unfollow(action) {
+  try {
+    yield delay(1000)
+    yield put({
+      type: UNFOLLOW_SUCCESS,
+      data: action.data
+    })
+  } catch (error) {
+    yield put({
+      type: UNFOLLOW_FAILURE,
+      error: error.response.data
+    })
+  }
+}
+
 // LOG_IN 액션이 실행될 때까지 기다리겠다. 그리고 logIn을 실행
 // take는 일회용이다. 딱 1회만 실행된다. -> 해당 이벤트리스너가 사라짐
 // 그래서 제너레이터를 이용한 무한을 만든다. -> 이것은 동기적으로 동작함
@@ -106,6 +150,20 @@ function* watchSignUp() {
   yield takeLatest(SIGN_UP_REQUEST, signUp)
 }
 
+function* watchFollow() {
+  yield takeLatest(FOLLOW_REQUEST, follow)
+}
+
+function* watchUnfollow() {
+  yield takeLatest(UNFOLLOW_REQUEST, unfollow)
+}
+
 export default function* userSaga() {
-  yield all([fork(watchLogIn), fork(watchLogOut), fork(watchSignUp)])
+  yield all([
+    fork(watchLogIn),
+    fork(watchLogOut),
+    fork(watchSignUp),
+    fork(watchFollow),
+    fork(watchUnfollow)
+  ])
 }
