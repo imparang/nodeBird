@@ -1,4 +1,3 @@
-// import axios from 'axios'
 import {
   LOG_IN_REQUEST,
   LOG_IN_SUCCESS,
@@ -16,13 +15,14 @@ import {
   UNFOLLOW_REQUEST,
   FOLLOW_REQUEST
 } from '../reducers/types'
-import { all, fork, put, delay, takeLatest } from '@redux-saga/core/effects'
+import { all, fork, put, takeLatest, call } from '@redux-saga/core/effects'
+import axios from 'axios'
 
 // action.data가 data로 들어감 -> go 함수 느낌으로
 // effct앞에 yield를 붙여주는 이유는 테스트하기에 편리해서
-// function logInAPI() {
-//   return axios.post('/api/login')
-// }
+function logInAPI(data) {
+  return axios.post('/api/login', data)
+}
 
 // call과 fork의 차이점
 // fork는  비동기적으로 처리될 수 있도록 도와주는 API -> 요청 보내고, 결과를 기다리는 것과 별개로 다음 것을 실행함. (non-blocking)
@@ -33,12 +33,11 @@ import { all, fork, put, delay, takeLatest } from '@redux-saga/core/effects'
 // saga와 reducer가 동시에 실행되는데 reducer가 조금 더 앞에서 실행된다.
 function* logIn(action) {
   try {
-    // const result = yield call(logInAPI) // 요청의 결괄르 받음
-    yield delay(1000)
+    const res = yield call(logInAPI, action.data) // 요청의 결괄르 받음
     yield put({
       // put은 dispatch와 같다.
       type: LOG_IN_SUCCESS,
-      data: action.data
+      data: res
     })
   } catch (error) {
     yield put({
@@ -48,16 +47,16 @@ function* logIn(action) {
   }
 }
 
-// function logOutAPI(data) {
-//   return axios.post('/api/logout', data)
-// }
+function logOutAPI(data) {
+  return axios.post('/api/logout', data)
+}
 
 function* logOut(action) {
   try {
-    // const result = yield call(logOutAPI, action.data)
-    yield delay(1000)
+    const res = yield call(logOutAPI, action.data)
     yield put({
-      type: LOG_OUT_SUCCESS
+      type: LOG_OUT_SUCCESS,
+      data: res
     })
   } catch (error) {
     yield put({
@@ -67,16 +66,16 @@ function* logOut(action) {
   }
 }
 
-// function signUpAPI(data) {
-//   return axios.post('/api/signup', data)
-// }
+function signUpAPI(data) {
+  return axios.post('http://localhost:5001/user', data)
+}
 
 function* signUp(action) {
   try {
-    yield delay(1000)
+    const res = yield call(signUpAPI, action.data)
     yield put({
       type: SIGN_UP_SUCCESS,
-      data: action.data
+      data: res
     })
   } catch (error) {
     yield put({
@@ -86,16 +85,16 @@ function* signUp(action) {
   }
 }
 
-// function followAPI(data) {
-//   return axios.post('/api/follow', data)
-// }
+function followAPI(data) {
+  return axios.post('/api/follow', data)
+}
 
 function* follow(action) {
   try {
-    yield delay(1000)
+    const res = yield call(followAPI, action.data)
     yield put({
       type: FOLLOW_SUCCESS,
-      data: action.data
+      data: res
     })
   } catch (error) {
     yield put({
@@ -105,16 +104,16 @@ function* follow(action) {
   }
 }
 
-// function unfollowAPI(data) {
-//   return axios.post('/api/unfollow', data)
-// }
+function unfollowAPI(data) {
+  return axios.post('/api/unfollow', data)
+}
 
 function* unfollow(action) {
   try {
-    yield delay(1000)
+    const res = yield call(unfollowAPI, action.data)
     yield put({
       type: UNFOLLOW_SUCCESS,
-      data: action.data
+      data: res
     })
   } catch (error) {
     yield put({
