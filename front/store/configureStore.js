@@ -5,13 +5,11 @@ import rootSaga from '../sagas'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import createSagaMiddleware from 'redux-saga'
 
-const loggerMiddleware =
-  ({ dispatch, getState }) =>
-  next =>
-  action => {
-    console.log(action)
-    return next(action)
-  }
+const loggerMiddleware = () => next => action => {
+  console.log(action)
+  return next(action)
+}
+
 const configureStore = () => {
   const sagaMiddleware = createSagaMiddleware()
   const middlewares = [sagaMiddleware, loggerMiddleware]
