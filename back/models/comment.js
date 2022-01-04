@@ -10,8 +10,8 @@ module.exports = (sequelize, DataTypes) => {
     collate: 'utf8mb4_general_ci', // 한글 저장
   })
   Comment.associate = db => {
-    db.Post.belongsTo(db.User)
-    db.Post.belongsTo(db.Post)
+    db.Comment.belongsTo(db.User)
+    db.Comment.belongsTo(db.Post)
   }
   return Comment
 }
