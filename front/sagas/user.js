@@ -21,7 +21,7 @@ import axios from 'axios'
 // action.data가 data로 들어감 -> go 함수 느낌으로
 // effct앞에 yield를 붙여주는 이유는 테스트하기에 편리해서
 function logInAPI(data) {
-  return axios.post('/api/login', data)
+  return axios.post('/user/login', data)
 }
 
 // call과 fork의 차이점
@@ -37,7 +37,7 @@ function* logIn(action) {
     yield put({
       // put은 dispatch와 같다.
       type: LOG_IN_SUCCESS,
-      data: res
+      data: res.data
     })
   } catch (error) {
     yield put({
@@ -48,7 +48,7 @@ function* logIn(action) {
 }
 
 function logOutAPI(data) {
-  return axios.post('/api/logout', data)
+  return axios.post('/user/logout', data)
 }
 
 function* logOut(action) {
@@ -56,7 +56,7 @@ function* logOut(action) {
     const res = yield call(logOutAPI, action.data)
     yield put({
       type: LOG_OUT_SUCCESS,
-      data: res
+      data: res.data
     })
   } catch (error) {
     yield put({
@@ -67,7 +67,7 @@ function* logOut(action) {
 }
 
 function signUpAPI(data) {
-  return axios.post('http://localhost:5001/user', data)
+  return axios.post('/user', data)
 }
 
 function* signUp(action) {
@@ -75,7 +75,7 @@ function* signUp(action) {
     const res = yield call(signUpAPI, action.data)
     yield put({
       type: SIGN_UP_SUCCESS,
-      data: res
+      data: res.data
     })
   } catch (error) {
     yield put({
@@ -86,7 +86,7 @@ function* signUp(action) {
 }
 
 function followAPI(data) {
-  return axios.post('/api/follow', data)
+  return axios.post('/user/follow', data)
 }
 
 function* follow(action) {
@@ -94,7 +94,7 @@ function* follow(action) {
     const res = yield call(followAPI, action.data)
     yield put({
       type: FOLLOW_SUCCESS,
-      data: res
+      data: res.data
     })
   } catch (error) {
     yield put({
@@ -105,7 +105,7 @@ function* follow(action) {
 }
 
 function unfollowAPI(data) {
-  return axios.post('/api/unfollow', data)
+  return axios.post('/user/unfollow', data)
 }
 
 function* unfollow(action) {
@@ -113,7 +113,7 @@ function* unfollow(action) {
     const res = yield call(unfollowAPI, action.data)
     yield put({
       type: UNFOLLOW_SUCCESS,
-      data: res
+      data: res.data
     })
   } catch (error) {
     yield put({

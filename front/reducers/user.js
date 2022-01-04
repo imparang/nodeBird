@@ -59,19 +59,6 @@ export const initialState = {
   loginData: {}
 }
 
-const dummyUser = data => ({
-  ...data,
-  nickname: 'noze',
-  id: 1,
-  Posts: [{ id: 1 }],
-  Followings: [
-    { nickname: 'aiki' },
-    { nickname: 'leejung' },
-    { nickname: 'IU' }
-  ],
-  Followers: [{ nickname: 'aiki' }, { nickname: 'leejung' }, { nickname: 'IU' }]
-})
-
 const reducer = (state = initialState, action) =>
   produce(state, draft => {
     switch (action.type) {
@@ -113,7 +100,7 @@ const reducer = (state = initialState, action) =>
       case LOG_IN_SUCCESS:
         draft.logInLoading = false
         draft.logInDone = true
-        draft.me = dummyUser(action.data)
+        draft.me = action.data
         break
       case LOG_IN_FAILURE:
         draft.logInLoading = false
