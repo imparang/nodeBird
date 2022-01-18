@@ -1,28 +1,50 @@
 import { Button, Card, List } from 'antd'
-import React from 'react'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { StopOutlined } from '@ant-design/icons'
+import { useDispatch } from 'react-redux'
+import { REMOVE_FOLLOWER_REQUEST, UNFOLLOW_REQUEST } from '../reducers/types'
 
 const FollowList = ({ header, data }) => {
+  const dispatch = useDispatch()
+  const onCancel = useCallback(
+    id => () => {
+      if (header === '팔로잉') {
+        dispatch({
+          type: UNFOLLOW_REQUEST,
+          data: id
+        })
+      }
+      dispatch({
+        type: REMOVE_FOLLOWER_REQUEST,
+        data: id
+      })
+    },
+    []
+  )
   return (
     <List
       style={{ marginBottom: '20px' }}
       grid={{ gutter: 4, xs: 2, md: 3, lg: 3 }}
       size="small"
       header={<div>{header}</div>}
-      loadMore={<div style={{ textAlign: 'center', margin: '10px 0'}}>
-        <Button>더 보기</Button>
-      </div>}
+      loadMore={
+        <div style={{ textAlign: 'center', margin: '10px 0' }}>
+          <Button>더 보기</Button>
+        </div>
+      }
       bordered
       dataSource={data}
-      renderItem={(item) => (
+      renderItem={item => (
         <List.Item style={{ marginTop: '20px' }}>
-          <Card actions={[<StopOutlined key="stop" />]}>
+          <Card
+            actions={[<StopOutlined key="stop" onClick={onCancel(item.id)} />]}
+          >
             <Card.Meta description={item.nickname} />
           </Card>
         </List.Item>
       )}
-  />
+    />
   )
 }
 
