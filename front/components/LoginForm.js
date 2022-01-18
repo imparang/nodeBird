@@ -5,6 +5,7 @@ import Link from 'next/link'
 import styled from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
 import { loginRequestAction } from '../reducers/user'
+import { useEffect } from 'react/cjs/react.development'
 
 const ButtonWrapper = styled.div`
   margin-top: 10px;
@@ -15,10 +16,16 @@ const FormWrapper = styled(Form)`
 `
 
 const LoginForm = () => {
-  const { logInLoading } = useSelector(state => state.user)
+  const { logInLoading, logInError } = useSelector(state => state.user)
   const [email, onChangeEmail] = useInput('')
   const [password, onChangePassword] = useInput('')
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (logInError) {
+      alert(logInError)
+    }
+  }, [logInError])
 
   // onFinish에는 e.preventDefault()가 넣어져 있다
   const onSubmitForm = useCallback(() => {
