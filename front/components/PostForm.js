@@ -1,33 +1,72 @@
-import { Button, Input, Form } from 'antd'
 import React, { useCallback, useEffect, useRef } from 'react'
+import { Button, Form, Input } from 'antd'
 import { useDispatch, useSelector } from 'react-redux'
+
+import {
+  ADD_POST_REQUEST,
+  UPLOAD_IMAGES_REQUEST,
+  REMOVE_IMAGE
+} from '../reducers/types'
 import useInput from '../hooks/useInput'
-import { addPost } from '../reducers/post'
 
 const PostForm = () => {
-  const { imagePath, addPostDone } = useSelector(state => state.post)
+  const { imagePaths, addPostDone } = useSelector(state => state.post)
+  const dispatch = useDispatch()
   const [text, onChangeText, setText] = useInput('')
-
   // 단순히 addPost를 하고 나서 초기화하면 안되는 것이
   // 만약 post가 실패했을 때, post 내용을 초기화하면 안되기 때문
   useEffect(() => {
-    if (addPostDone) setText('')
+    if (addPostDone) {
+      setText('')
+    }
   }, [addPostDone])
 
-  const dispatch = useDispatch()
   const onSubmit = useCallback(() => {
-    dispatch(addPost(text))
-  }, [text])
+    if (!text || !text.trim()) {
+      return alert('게시글을 작성하세요.')
+    }
+    const formData = new FormData()
+    imagePaths.forEach(p => {
+      formData.append('image', p)
+    })
+    formData.append('content', text)
+    return dispatch({
+      type: ADD_POST_REQUEST,
+      data: formData
+    })
+  }, [text, imagePaths])
 
-  const imageInput = useRef(null)
+  const imageInput = useRef()
   const onClickImageUpload = useCallback(() => {
     imageInput.current.click()
   }, [imageInput.current])
 
+  const onChangeImages = useCallback(e => {
+    console.log('images', e.target.files)
+    const imageFormData = new FormData()
+    ;[].forEach.call(e.target.files, f => {
+      imageFormData.append('image', f)
+    })
+    dispatch({
+      type: UPLOAD_IMAGES_REQUEST,
+      data: imageFormData
+    })
+  }, [])
+
+  const onRemoveImage = useCallback(
+    index => () => {
+      dispatch({
+        type: REMOVE_IMAGE,
+        data: index
+      })
+    },
+    []
+  )
+
   return (
     <Form
       style={{ margin: '10px 0 20px' }}
-      encType="mulitpart/form-data"
+      encType="multipart/form-data"
       onFinish={onSubmit}
     >
       <Input.TextArea
@@ -37,22 +76,32 @@ const PostForm = () => {
         placeholder="어떤 신기한 일이 있었나요?"
       />
       <div>
-        <input type="file" multiple hidden ref={imageInput} />
+        <input
+          type="file"
+          name="image"
+          multiple
+          hidden
+          ref={imageInput}
+          onChange={onChangeImages}
+        />
         <Button onClick={onClickImageUpload}>이미지 업로드</Button>
         <Button type="primary" style={{ float: 'right' }} htmlType="submit">
-          게시글 작성
+          짹짹
         </Button>
       </div>
       <div>
-        {imagePath &&
-          imagePath.map(y => (
-            <div key={y} style={{ display: 'inline-block' }}>
-              <img src={y} style={{ width: '200px' }} alt={y} />
-              <div>
-                <Button>제거</Button>
-              </div>
+        {imagePaths.map((v, i) => (
+          <div key={v} style={{ display: 'inline-block' }}>
+            <img
+              src={`http://localhost:5001/${v}`}
+              style={{ width: '200px' }}
+              alt={v}
+            />
+            <div>
+              <Button onClick={onRemoveImage(i)}>제거</Button>
             </div>
-          ))}
+          </div>
+        ))}
       </div>
     </Form>
   )
