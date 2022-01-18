@@ -4,6 +4,7 @@ import userSaga from './user'
 import axios from 'axios'
 
 axios.defaults.baseURL = 'http://localhost:5001'
+axios.defaults.withCredentials = true
 // rootsaga를 만들고 비동기 액션을 넣어주면 된다.
 // all은 그런 애들을 동시에 실행시켜준다.
 // fork는 제너레이터 함수 실행 <->  call 차이를 알아야 함
